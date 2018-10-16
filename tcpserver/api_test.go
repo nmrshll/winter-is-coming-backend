@@ -99,11 +99,48 @@ func Test_API_playerShotHandler(t *testing.T) {
 				utils.WrapFatal(t, err, "could not write payload to TCP server")
 			}
 
+			// read all messages
 			readString := testReadConn(t, conn) // contains the shootMessage
-			readString = testReadConn(t, conn)  // should contain "zombie dies"
-			if !strings.Contains(readString, "zombie dies") {
-				t.Fatalf("expected to read message \"zombie dies\", found: %s", readString)
+			readString = testReadConn(t, conn)  // should contain "zombie dies" if the shot was fast enough to hit the zombie
+			if strings.Contains(readString, "zombie dies") {
+				return // zombie was hit, test passes
+			} else {
+				awaitWalkAndShootAtZombieCoordinates(0, t, conn)
 			}
 		})
 	})
+}
+
+func awaitWalkAndShootAtZombieCoordinates(idx int, t *testing.T, conn net.Conn) {
+	if idx > 10 {
+		t.Fatalf("failed hitting zombie")
+		return
+	}
+
+	readString := testReadConn(t, conn)
+	if strings.Contains(readString, "SHOOT") {
+		awaitWalkAndShootAtZombieCoordinates(idx+1, t, conn)
+	}
+	if strings.Contains(readString, "WALK") {
+		var walkMessage protocol.WalkMessage
+		err := walkMessage.Parse(readString)
+		if err != nil {
+			utils.WrapFatal(t, err, "failed parsing walkMessage")
+		}
+
+		// attempt shot at zombie coordinates
+		shootMessage := protocol.ShootMessage{X: walkMessage.X, Y: walkMessage.Y}
+		if _, err := conn.Write(shootMessage.Serialize()); err != nil {
+			utils.WrapFatal(t, err, "could not write payload to TCP server")
+		}
+
+		// read all messages
+		readString := testReadConn(t, conn) // contains the shootMessage
+		readString = testReadConn(t, conn)  // should contain "zombie dies"
+		if strings.Contains(readString, "zombie dies") {
+			return // zombie was hit, test passes
+		} else {
+			awaitWalkAndShootAtZombieCoordinates(idx+1, t, conn)
+		}
+	}
 }
