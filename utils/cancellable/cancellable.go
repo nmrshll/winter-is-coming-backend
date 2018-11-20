@@ -2,7 +2,7 @@ package cancellable
 
 import "time"
 
-func Run(timePeriod time.Duration, loopFunc func() error) (cancelFunc func()) {
+func RunEvery(timePeriod time.Duration, loopFunc func() error) (cancelFunc func()) {
 	cancelChan := make(chan struct{})
 	go func() {
 		for {

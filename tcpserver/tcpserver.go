@@ -124,7 +124,7 @@ func handleConn(conn net.Conn) {
 		})
 
 		// handle user shots
-		stopHandlingUserShots := cancellable.Run(10*time.Millisecond, func() error {
+		stopHandlingUserShots := cancellable.RunEvery(10*time.Millisecond, func() error {
 			err := expectRequestType(conn, playerShotHandler(currentGame))
 			if err != nil {
 				errors.Log(err)
