@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/nmrshll/winter-is-coming-backend/gamelogic"
+	"github.com/nmrshll/winter-is-coming-backend/utils/cancellable"
 	"github.com/nmrshll/winter-is-coming-backend/utils/errors"
 )
 
@@ -123,22 +124,15 @@ func handleConn(conn net.Conn) {
 		})
 
 		// handle user shots
-		stopHandlingUserShots := make(chan struct{})
-		go func() {
-			for {
-				select {
-				case <-time.After(10 * time.Millisecond):
-					err := expectRequestType(conn, playerShotHandler(currentGame))
-					if err != nil {
-						errors.Log(err)
-						return // close connection after error
-					}
-				case <-stopHandlingUserShots:
-					return
-				}
+		stopHandlingUserShots := cancellable.Run(10*time.Millisecond, func() error {
+			err := expectRequestType(conn, playerShotHandler(currentGame))
+			if err != nil {
+				errors.Log(err)
+				return err // close connection after error
 			}
-		}()
-		defer close(stopHandlingUserShots)
+			return nil
+		})
+		defer stopHandlingUserShots()
 
 		// wait for outcome (zombie gets hit or reaches the wall) and end connection
 		for {
