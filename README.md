@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/nmrshll/winter-is-coming-backend.svg?branch=master)](https://travis-ci.org/nmrshll/winter-is-coming-backend)
 
 # winter-is-coming-backend
-Submission for the [backend challenge](https://github.com/mysteriumnetwork/winter-is-coming/blob/master/quests/Talk_to_Zombies.md#communication-channel-specification) for mysterium
+Attempt at mysterium's [backend challenge](https://github.com/mysteriumnetwork/winter-is-coming/blob/master/quests/Talk_to_Zombies.md#communication-channel-specification)
 
 ## Quick start
 
