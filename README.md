@@ -25,7 +25,6 @@ nc localhost 7777
 
 And follow the instructions on the screen
 
-====
 
 ### Automated tests
 
@@ -35,7 +34,7 @@ Automated tests get run on each push in travis. To run the test suite on your ma
 make test
 ```
 
-====
+---
 
 ## Usage
 
