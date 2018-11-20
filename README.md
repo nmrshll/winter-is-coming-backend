@@ -23,7 +23,7 @@ Then from a second terminal:
 nc localhost 7777
 ```
 
-And follow the instructions on the screen
+Follow the instructions in this terminal to play the game
 
 
 ### Automated tests
@@ -34,7 +34,6 @@ Automated tests get run on each push in travis. To run the test suite on your ma
 make test
 ```
 
----
 
 ## Usage
 
